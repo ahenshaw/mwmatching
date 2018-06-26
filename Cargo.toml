@@ -1,0 +1,16 @@
+[package]
+name = "mwmatching"
+version = "0.1.0"
+authors = ["Andrew Henshaw <andrew@henshaw.us>"]
+
+[dependencies]
+
+[profile.release]
+debug = true
+
+[lib]
+name = "mwmatching"
+path = "src/lib.rs"
+test = true
+doctest = false
+doc = true
