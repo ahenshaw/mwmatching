@@ -9,11 +9,11 @@ Compute a maximum-weighted matching in the general undirected
 weighted graph given by "edges".  
 General usage:
 ```
-  let mates = matching.new(edges).solve();
+  let mates = Matching::new(edges).solve();
 ```
 or
 ```
-  let mates = matching.new(edges).max_cardinality().solve();
+  let mates = Matching::new(edges).max_cardinality().solve();
 ```
 If "max_cardinality()" is used, then only maximum-cardinality matchings are considered as solutions.
 
