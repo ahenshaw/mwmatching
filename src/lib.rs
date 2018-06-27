@@ -1,5 +1,9 @@
 // Weighted maximum matching in general graphs.
 
+// This is a Rust re-implementation of a Python program by Joris van Rantwijk.
+// Nearly all of the comments are taken directly from that version.
+// For his original code, go to http://jorisvr.nl/article/maximum-matching.
+
 // The algorithm is taken from "Efficient Algorithms for Finding Maximum
 // Matching in Graphs" by Zvi Galil, ACM Computing Surveys, 1986.
 // It is based on the "blossom" method for finding augmenting paths and
@@ -7,6 +11,20 @@
 // due to Jack Edmonds.
 // Some ideas came from "Implementation of algorithms for maximum matching
 // on non-bipartite graphs" by H.J. Gabow, Standford Ph.D. thesis, 1973.
+
+/// Compute a maximum-weighted matching in the general undirected
+/// weighted graph given by "edges".  If "maxcardinality" is true,
+/// only maximum-cardinality matchings are considered as solutions.
+
+/// Edges is a sequence of tuples (i, j, wt) describing an undirected
+/// edge between vertex i and vertex j with weight wt.  There is at most
+/// one edge between any two vertices; no vertex has an edge to itself.
+/// Vertices are identified by consecutive, non-negative integers.
+
+/// Return a list "mate", such that mate[i] == j if vertex i is
+/// matched to vertex j, and mate[i] == SENTINEL if vertex i is not matched.
+
+/// This function takes time O(n ** 3)."""
 
 use std::cmp::max;
 
@@ -464,14 +482,14 @@ impl Matching {
             while j != 0 {
                 // Relabel the T-sub-blossom.
                 self.label[self.endpoint[p ^ 1]] = 0;
-                self.label[self.endpoint[circular_get(&self.blossomendps[b], j-endptrick as i32)^endptrick^1]] = 0;
+                self.label[self.endpoint[pos_neg_index(&self.blossomendps[b], j-endptrick as i32)^endptrick^1]] = 0;
                 let ep = self.endpoint[p ^ 1];
                 self.assign_label(ep, 2, p);
 
                 // Step to the next S-sub-blossom and note its forward endpoint.
-                self.allowedge[circular_get(&self.blossomendps[b], j-endptrick as i32)/2] = true;
+                self.allowedge[pos_neg_index(&self.blossomendps[b], j-endptrick as i32)/2] = true;
                 j += jstep;
-                p = circular_get(&self.blossomendps[b], j-endptrick as i32) ^ endptrick;
+                p = pos_neg_index(&self.blossomendps[b], j-endptrick as i32) ^ endptrick;
 
                 // Step to the next T-sub-blossom.
                 self.allowedge[p/2] = true;
@@ -480,7 +498,7 @@ impl Matching {
 
             // Relabel the base T-sub-blossom WITHOUT stepping through to
             // its mate (so don't call assignLabel).
-            let bv = circular_get(&self.blossomchilds[b], j);
+            let bv = pos_neg_index(&self.blossomchilds[b], j);
             self.label[self.endpoint[p ^ 1]] = 2;
             self.label[bv] = 2;
 
@@ -492,11 +510,11 @@ impl Matching {
             // Continue along the blossom until we get back to entrychild.
             j += jstep;
 
-            while circular_get(&self.blossomchilds[b], j) != entrychild {
+            while pos_neg_index(&self.blossomchilds[b], j) != entrychild {
                 // Examine the vertices of the sub-blossom to see whether
                 // it is reachable from a neighbouring S-vertex outside the
                 // expanding blossom.
-                let bv = circular_get(&self.blossomchilds[b], j);
+                let bv = pos_neg_index(&self.blossomchilds[b], j);
                 if self.label[bv] == 1 {
                     // This sub-blossom just got label S through one of its
                     // neighbours; leave it.
@@ -571,8 +589,8 @@ impl Matching {
         while j != 0 {
             // Step to the next sub-blossom and augment it recursively.
             j += jstep;
-            let mut t = circular_get(&self.blossomchilds[b], j);
-            let p = circular_get(&self.blossomendps[b], j-endptrick as i32) ^ endptrick;
+            let mut t = pos_neg_index(&self.blossomchilds[b], j);
+            let p = pos_neg_index(&self.blossomendps[b], j-endptrick as i32) ^ endptrick;
             if (t !=SENTINEL) && (t >= self.nvertex) {
                 let endp = self.endpoint[p];
                 self.augment_blossom(t, endp);
@@ -584,7 +602,7 @@ impl Matching {
             } else {
                 j -= 1;
             }
-            t = circular_get(&self.blossomchilds[b], j);
+            t = pos_neg_index(&self.blossomchilds[b], j);
             if (t !=SENTINEL) && (t >= self.nvertex) {
                 let endp = self.endpoint[p ^ 1];
                 self.augment_blossom(t, endp);
@@ -776,6 +794,7 @@ impl Matching {
         }
         assert!(bd == tbd);
     }
+
     pub fn solve(&mut self) -> Vertices {
         if self.edges.len() == 0 {
             return vec![];
@@ -1058,33 +1077,10 @@ fn rotate(v: &mut Vertices, split: usize) {
     v[b.len() ..].copy_from_slice(a);
 }
 
-fn circular_get(v: &Vertices, index: i32) -> Vertex {
+/// index into vector using both positive and negative indices (Python-style)
+fn pos_neg_index(v: &Vertices, index: i32) -> Vertex {
     let actual_index = if index>= 0 {index as usize} else {(v.len()-(-index) as usize)};
     v[actual_index]
-}
-
-/// Compute a maximum-weighted matching in the general undirected
-/// weighted graph given by "edges".  If "maxcardinality" is true,
-/// only maximum-cardinality matchings are considered as solutions.
-
-/// Edges is a sequence of tuples (i, j, wt) describing an undirected
-/// edge between vertex i and vertex j with weight wt.  There is at most
-/// one edge between any two vertices; no vertex has an edge to itself.
-/// Vertices are identified by consecutive, non-negative integers.
-
-/// Return a list "mate", such that mate[i] == j if vertex i is
-/// matched to vertex j, and mate[i] == SENTINEL if vertex i is not matched.
-
-/// This function takes time O(n ** 3)."""
-
-pub fn max_weight_matching(edges: Vec<Edge>) -> Vertices {
-    //if edges.len() == 0 {
-    //    return vec![];
-    //}
-    let mut state = Matching::new(edges);
-    //state.initialize();
-    state.max_cardinality();
-    state.solve()
 }
 
 

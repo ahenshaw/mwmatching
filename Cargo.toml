@@ -6,7 +6,7 @@ authors = ["Andrew Henshaw <andrew@henshaw.us>"]
 [dependencies]
 
 [profile.release]
-debug = true
+debug = false
 
 [lib]
 name = "mwmatching"
