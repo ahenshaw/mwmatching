@@ -8,10 +8,13 @@ For the original code, go to http://jorisvr.nl/article/maximum-matching.
 Compute a maximum-weighted matching in the general undirected
 weighted graph given by "edges".  
 General usage:
+```
   let mates = matching.new(edges).solve();
+```
 or
+```
   let mates = matching.new(edges).max_cardinality().solve();
-
+```
 If "max_cardinality()" is used, then only maximum-cardinality matchings are considered as solutions.
 
 Edges is a sequence of tuples (i, j, wt) describing an undirected
