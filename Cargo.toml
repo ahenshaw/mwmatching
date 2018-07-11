@@ -1,6 +1,6 @@
 [package]
 name = "mwmatching"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Andrew Henshaw <andrew@henshaw.us>"]
 description = "Maximum-Weight Matching: Compute a maximum-weighted matching in the general undirected weighted graph given by 'edges'."
 repository = "https://github.com/ahenshaw/mwmatching"
