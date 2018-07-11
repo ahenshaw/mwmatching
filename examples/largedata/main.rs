@@ -7,7 +7,7 @@ use rand::Rng;
 extern crate mwmatching;
 use mwmatching::{Edges, Weight, Vertex, Matching};
 
-const N:Vertex = 1000;
+const N:Vertex = 2000;
 
 fn main() {
     let mut edges:Edges = vec![];

@@ -9,7 +9,7 @@ keywords = ["graph", "matching"]
 [dependencies]
 
 [profile.release]
-debug = false
+debug = true
 
 [lib]
 name = "mwmatching"

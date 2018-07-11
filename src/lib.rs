@@ -672,7 +672,7 @@ impl Matching {
     }
 
     /// Verify that the optimum solution has been reached.
-    fn verify_optimum(&mut self) {
+    fn verify_optimum(&self) {
         let vdualoffset:Weight;
         if self.maxcardinality {
             // Vertices may have negative dual;
@@ -693,11 +693,11 @@ impl Matching {
             let mut jblossoms = vec![j];
 
             while self.blossomparent[*(iblossoms.last().unwrap())] != SENTINEL {
-                let ix = iblossoms.last().unwrap().clone();
+                let &ix = iblossoms.last().unwrap();
                 iblossoms.push(self.blossomparent[ix]);
             }
             while self.blossomparent[*(jblossoms.last().unwrap())] != SENTINEL {
-                let jx = jblossoms.last().unwrap().clone();
+                let &jx = jblossoms.last().unwrap();
                 jblossoms.push(self.blossomparent[jx]);
             }
             iblossoms.reverse();
@@ -731,10 +731,11 @@ impl Matching {
                 }
             }
         }
-        // Ok.
+        // Optimum verified
     }
+    
     /// Check optimized delta2 against a trivial computation.
-    fn check_delta2(&mut self) {
+    fn check_delta2(&self) {
         for v in 0..self.nvertex {
             if self.label[self.inblossom[v]] == 0 {
                 let mut bd = 0;
@@ -759,7 +760,7 @@ impl Matching {
     }
 
     /// Check optimized delta3 against a trivial computation.
-    fn check_delta3(&mut self) {
+    fn check_delta3(&self) {
         let mut bk = SENTINEL;
         let mut bd = 0;
         let mut tbk = SENTINEL;
